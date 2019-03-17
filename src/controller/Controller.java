@@ -47,12 +47,12 @@ public class Controller {
 					this.loadMovingViolations();
 					break;
 					
-				case 2:
-					IQueue<VODaylyStatistic> dailyStatistics = this.getDailyStatistics();
-					view.printDailyStatistics(dailyStatistics);
-					break;
+//				case 2:
+//					IQueue<VODaylyStatistic> dailyStatistics = this.getDailyStatistics();
+//					view.printDailyStatistics(dailyStatistics);
+//					break;
 					
-				case 3:
+				case 2:
 					view.printMensage("Ingrese el número de infracciones a buscar");
 					int n = sc.nextInt();
 
@@ -71,7 +71,7 @@ public class Controller {
 	
 
 	public void loadMovingViolations() {
-		// TODO
+		
 	}
 	
 	public IQueue <VODaylyStatistic> getDailyStatistics () {

@@ -1,5 +1,5 @@
 /**
- * Ejemplo de Separate Chaining tomado de https://www.geeksforgeeks.org/implementing-our-own-hash-table-with-separate-chaining-in-java/
+ * Sitio web de consulta: https://www.geeksforgeeks.org/implementing-our-own-hash-table-with-separate-chaining-in-java/
  */
 import java.util.ArrayList; 
 
@@ -141,7 +141,7 @@ public class HashTableSeparateChaining {
 
 			// Si el factor de carga supera 5.0 entonces se
 			// duplica el tamaño de la tabla de hash (rehash).
-			if ((1.0*size)/capacidad >= 0.7) 
+			if ((1.0*size)/capacidad >= 5.0) 
 			{ 
 				ArrayList<HashNode<K, V>> temp = arreglo; 
 				arreglo = new ArrayList<>(); 
