@@ -1,11 +1,6 @@
 package controller;
 
 import java.util.Scanner;
-
-
-import model.data_structures.IQueue;
-import model.data_structures.IStack;
-import model.vo.VODaylyStatistic;
 import model.vo.VOMovingViolations;
 import view.MovingViolationsManagerView;
 import com.google.gson.JsonArray;
@@ -20,23 +15,29 @@ public class Controller {
 
 	private MovingViolationsManagerView view;
 
-	/**
-	 * Cola donde se van a cargar los datos de los archivos
-	 */
-	private IQueue<VOMovingViolations> movingViolationsQueue;
+	public void loadMovingViolations() {
+		JsonParser parser = new JsonParser();
 
-	/**
-	 * Pila donde se van a cargar los datos de los archivos
-	 */
-	private IStack<VOMovingViolations> movingViolationsStack;
+		try {
+			String datos1 = "./T6_201910/data/Moving_Violations_Issued_in_January_2018.json";
+			String datos2 = "./T6_201910/data/Moving_Violations_Issued_in_February_2018.json";
+			String datos3 = "./T6_201910/data/Moving_Violations_Issued_in_March_2018.json";
+			String datos4 = "./T6_201910/data/Moving_Violations_Issued_in_April_2018.json";
+			String datos5 = "./T6_201910/data/Moving_Violations_Issued_in_May_2018.json";
+			String datos6 = "./T6_201910/data/Moving_Violations_Issued_in_June_2018.json";
 
+			/* Cargar todos los JsonObject (servicio) definidos en un JsonArray en el archivo */
+			JsonArray arr= (JsonArray) parser.parse(new FileReader(datos1));
+			arr.add((JsonArray)parser.parse(new FileReader(datos2)));
+			arr.add((JsonArray)parser.parse(new FileReader(datos3)));
+			arr.add((JsonArray)parser.parse(new FileReader(datos4)));
+			arr.add((JsonArray)parser.parse(new FileReader(datos5)));
+			arr.add((JsonArray)parser.parse(new FileReader(datos6)));
+		}
+	}
 
 	public Controller() {
 		view = new MovingViolationsManagerView();
-
-		//TODO, inicializar la pila y la cola
-		movingViolationsQueue = null;
-		movingViolationsStack = null;
 	}
 
 	public void run() {
@@ -68,27 +69,11 @@ public class Controller {
 				view.printMovingViolations(violations);
 				break;
 
-			case 4:	
+			case 3:	
 				fin=true;
 				sc.close();
 				break;
 			}
 		}
-	}
-
-
-
-	public void loadMovingViolations() {
-		
-	}
-
-	public IQueue <VODaylyStatistic> getDailyStatistics () {
-		// TODO
-		return null;
-	}
-
-	public IStack <VOMovingViolations> nLastAccidents(int n) {
-		// TODO
-		return null;
 	}
 }

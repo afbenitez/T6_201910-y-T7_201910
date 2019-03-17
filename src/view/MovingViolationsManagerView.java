@@ -1,8 +1,6 @@
 package view;
 
-import model.data_structures.IQueue;
-import model.data_structures.IStack;
-import model.vo.VODaylyStatistic;
+
 import model.vo.VOMovingViolations;
 
 public class MovingViolationsManagerView 
@@ -19,5 +17,7 @@ public class MovingViolationsManagerView
 		System.out.println("3. Salir");
 		System.out.println("Digite el número de opción para ejecutar la tarea, luego presione enter: (Ej., 1):");	
 	}
+	
+
 	
 }
