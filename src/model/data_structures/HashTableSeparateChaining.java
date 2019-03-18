@@ -1,7 +1,8 @@
-/**
- * Sitio web de consulta: https://www.geeksforgeeks.org/implementing-our-own-hash-table-with-separate-chaining-in-java/
- */
-import java.util.ArrayList; 
+package model.data_structures;
+
+import java.util.ArrayList;
+
+
 
 
 public class HashTableSeparateChaining {
@@ -162,19 +163,20 @@ public class HashTableSeparateChaining {
 		} 
 
 		// Driver method to test Map class 
-		public static void main(String[] args) 
-		{ 
-			Map<String, Integer>map = new Map<>(); 
-			map.add("this",1 ); 
-			map.add("coder",2 ); 
-			map.add("this",4 ); 
-			map.add("hi",5 ); 
-			System.out.println(map.size()); 
-			System.out.println(map.remove("this")); 
-			System.out.println(map.remove("this")); 
-			System.out.println(map.size()); 
-			System.out.println(map.isEmpty()); 
-		} 
+//		public static void main(String[] args) 
+//		{ 
+//			Map<String, Integer>map = new Map<>(); 
+//			map.add("this",1 ); 
+//			map.add("coder",2 ); 
+//			map.add("this",4 ); 
+//			map.add("hi",5 ); 
+//			System.out.println(map.size()); 
+//			System.out.println(map.remove("this")); 
+//			System.out.println(map.remove("this")); 
+//			System.out.println(map.size()); 
+//			System.out.println(map.isEmpty()); 
+//		} 
 	} 
 
 }
+
