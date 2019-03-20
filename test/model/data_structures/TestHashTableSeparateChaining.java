@@ -8,7 +8,8 @@ import java.util.ArrayList;
 
 import junit.framework.TestCase;
 
-public class TestHashTableSeparateChaining extends TestCase{
+public class TestHashTableSeparateChaining extends TestCase
+{
 
 	public void testSize() {
 		ArrayList<int> arregloPrueba = new ArrayList();

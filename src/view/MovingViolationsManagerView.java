@@ -9,15 +9,20 @@ public class MovingViolationsManagerView
 		
 	}
 	
-	public void printMenu() {
+	public void printMenu()
+	{
 		System.out.println("---------ISIS 1206 - Estructuras de datos----------");
 		System.out.println("---------------------Taller 6----------------------");
+		System.out.println("0. Cargar los datos");
 		System.out.println("1. Cree una nueva coleccion de infracciones");
 		System.out.println("2. Dar infracciones con accidente por ADRESS_ID");
 		System.out.println("3. Salir");
 		System.out.println("Digite el número de opción para ejecutar la tarea, luego presione enter: (Ej., 1):");	
 	}
 	
-
+	public void printMessage(String mensaje) 
+	{
+		System.out.println(mensaje);
+	}
 	
 }

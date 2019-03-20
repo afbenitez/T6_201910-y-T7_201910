@@ -1,109 +1,167 @@
 package controller;
-import java.io.FileNotFoundException;
+
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Scanner;
+import com.google.gson.*;
+import model.utils.Sort;
 import model.vo.VOMovingViolations;
+import model.data_structures.*;
 import view.MovingViolationsManagerView;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
+public class Controller 
+{
 
+	private enum Meses
+	{
+		January(0), 
+		February(0),
+		March(0), 
+		April(0), 
+		May(0), 
+		June(0);
+		
+		
+		private int infracciones;
 
-public class Controller {
+		private Meses(int cantidad)
+		{ 
+			this.infracciones = cantidad;
+		}
 
+		private void contar()
+		{ 
+			this.infracciones++; 
+		}
+
+		private int darInfracciones()
+		{ 
+			return infracciones; 
+		}
+	}
 	private MovingViolationsManagerView view;
-
-	public JsonArray loadMovingViolations() throws FileNotFoundException {
-		JsonParser parser = new JsonParser();
-		JsonArray resp = new JsonArray();
-		String datos1 = "./data/Moving_Violations_Issued_in_January_2018.json";
-		String datos2 = "./data/Moving_Violations_Issued_in_February_2018.json";
-		String datos3 = "./data/Moving_Violations_Issued_in_March_2018.json";
-		String datos4 = "./data/Moving_Violations_Issued_in_April_2018.json";
-		String datos5 = "./data/Moving_Violations_Issued_in_May_2018.json";
-		String datos6 = "./data/Moving_Violations_Issued_in_June_2018.json";
-		FileReader fr1 = new FileReader(datos1);
-		FileReader fr2 = new FileReader(datos2);
-		FileReader fr3 = new FileReader(datos3);
-		FileReader fr4 = new FileReader(datos4);
-		FileReader fr5 = new FileReader(datos5);
-		FileReader fr6 = new FileReader(datos6);
-		
-		try {
-
-
-			/* Cargar todos los JsonObject (servicio) definidos en un JsonArray en el archivo */
-			JsonArray arr= (JsonArray) parser.parse(fr1);
-			arr.add(parser.parse(fr2));
-			arr.add(parser.parse(fr3));
-			arr.add(parser.parse(fr4));
-			arr.add(parser.parse(fr5));
-			arr.add(parser.parse(fr6));
-			
-			
-			System.out.println("Cargó");
-			resp = arr;
-			
-		}
-		catch (JsonIOException e1 ) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		catch (JsonSyntaxException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
 	
-		
-		return resp;
-	}
-
-	public Controller() {
+	private ArregloDinamico<VOMovingViolations> datos;
+	
+	VOMovingViolations [] muestra;
+	
+	
+	public Controller() 
+	{
 		view = new MovingViolationsManagerView();
+		datos=new ArregloDinamico<VOMovingViolations>(300000);
 	}
 
-	public void run()  {
+	public void run() 
+	{
 		Scanner sc = new Scanner(System.in);
-		boolean fin = false;
-
+		boolean fin=false;
+		Controller controller = new Controller();
 		while(!fin)
 		{
 			view.printMenu();
-
 			int option = sc.nextInt();
 
 			switch(option)
 			{
+			case 0:
+				this.loadMovingViolations();
+				break;
 			case 1:
-				try {
-					this.loadMovingViolations();
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+
+				view.printMessage("Ingrese el addressID del cual desea obtener las infracciones con accidente");
+
+				int address_id=sc.nextInt();
+
+				ArregloDinamico<VOMovingViolations> z= this.infraccionesConAccidente().get(address_id);
+				System.out.println("Se encontraron "+z.darTamanio()+" infracciones que terminaron en accidente con el AddressID indicado:");
+				if(z!=null)
+				{
+					VOMovingViolations[] violaciones=new VOMovingViolations[z.darTamanio()];
+					for(int i=0;i<z.darTamanio();i++)
+					{
+						violaciones[i]=z.darElemento(i);
+					}
+					Sort.sort(violaciones, new VOMovingViolations.comparatorDate());
+					for(int i=0;i<violaciones.length;i++)
+					{
+						if(violaciones[i]!=null)
+							view.printMessage(violaciones[i].toString());
+						else break;
+					}
 				}
+				else 
+					view.printMessage("El codigo no es válido o no existen infracciones asociadas a la dirección ingresada");
 				break;
 
-				//				case 2:
-				//					IQueue<VODaylyStatistic> dailyStatistics = this.getDailyStatistics();
-				//					view.printDailyStatistics(dailyStatistics);
-				//					break;
+			case 2: 
 
-			case 2:
-//				view.printMensage("Ingrese el número de infracciones a buscar");
-//				int n = sc.nextInt();
-//
-//				IStack<VOMovingViolations> violations = this.nLastAccidents(n);
-//				view.printMovingViolations(violations);
+			
+
 				break;
-
-			case 3:	
-				fin=true;
+			case 3:
 				sc.close();
-				break;
+				fin=true;
 			}
 		}
 	}
+
+	public void loadMovingViolations() 
+	{
+		try
+		{
+			for(Meses meses : Meses.values())
+			{ 
+				Gson gson=new Gson();
+				BufferedReader br = new BufferedReader(new FileReader("./data/Moving_Violations_Issued_in_"+meses+"_2018.json"));
+				VOMovingViolations[] actual =  gson.fromJson(br, VOMovingViolations[].class);
+				for (int i = 0; i < actual.length; i++) 
+				{
+					datos.agregar(actual[i]);
+					meses.contar();	
+				}
+				view.printMessage("Numero de infracciones en el mes de " + (meses.name()) + ": " + meses.darInfracciones());
+			}	
+		}
+		catch(Exception e)
+		{ 
+			e.printStackTrace(); 
+		}
+
+		muestra=new VOMovingViolations[datos.darTamanio()];
+		for(int i  = 0; i < datos.darTamanio(); i++)
+		{
+			muestra[i] = datos.darElemento(i);
+		}
+		Sort.sort(muestra, new VOMovingViolations.comparadorAddressID());
+		view.printMessage("Se encontraron "+datos.darTamanio()+" MovingViolations");
+	}
+
+	public LinearHash<Integer,ArregloDinamico <VOMovingViolations>> infraccionesConAccidente()
+	{
+		LinearHash <Integer,ArregloDinamico<VOMovingViolations>> retorno= new LinearHash<Integer,ArregloDinamico<VOMovingViolations>>(20000);
+		ArregloDinamico <VOMovingViolations> aux=new ArregloDinamico<VOMovingViolations>(200);
+		int address_id=muestra[0].getAddressID();
+
+		for(int i=0;i<muestra.length;i++)
+		{
+			if(muestra[i].getAddressID()==address_id && muestra[i].accident())
+			{
+				aux.agregar(muestra[i]);
+			}
+			else if(muestra[i].getAddressID()!=address_id)
+			{
+				retorno.put(address_id,aux);
+				address_id=muestra[i].getAddressID();
+				aux=new ArregloDinamico<VOMovingViolations>(200);
+				if(muestra[i].accident())
+					aux.agregar(muestra[i]);
+			}
+		}
+		retorno.put(address_id,aux);
+
+		return retorno;
+	}
+
+	
 }
