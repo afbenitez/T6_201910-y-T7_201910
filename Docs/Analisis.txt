@@ -1,0 +1,11 @@
+Análisis T7:
+
+a) El total de nodos (infracciones en el árbol) para todo el semestre es de 599207.
+b) La altura real del árbol es 2*lg(599207) = 38.
+c) La altura promedio para buscar una infracción es 5, pero en el peor caso es <= 11.
+d) La altura teórica para el árbol más alto es 2*lg(599207 + 1)=2*lg(599208)= 38.
+e) El árbol más bajo que se puede construir tiene una altura teórica que lg(599207)=18.
+f) La altura teórica del árbol 2-3 más alto que se puede construir es de log(599207) = 19 (donde todos son nodos tipo 2).
+g) La altura teórica del árbol 2-3 más bajo que se puede construir es log3(599207) = 12 (donde todos son nodos tipo 3).
+h) La altura del árbol construido es menor o igual a las alturas teóricas de los árboles Rojo-Negro y 2-3. Esto se debe a que en la organización del árbol en ciertos casos no se mantienen muy bien las propiedades de orden simétrico y de balance perfecto de los nodos negros. 
+i) El promedio en el mejor caso es 18, y en el peor caso es 19.
