@@ -2,11 +2,13 @@ package controller;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.Iterator;
 import java.util.Scanner;
+
 import com.google.gson.*;
-import model.utils.Sort;
+
+import model.data_structures.RedBlackTree;
 import model.vo.VOMovingViolations;
-import model.data_structures.*;
 import view.MovingViolationsManagerView;
 
 public class Controller 
@@ -14,14 +16,12 @@ public class Controller
 
 	private enum Meses
 	{
-		January(0), 
-		February(0),
+		January(0),
+		February(0), 
 		March(0), 
 		April(0), 
 		May(0), 
 		June(0);
-		
-		
 		private int infracciones;
 
 		private Meses(int cantidad)
@@ -41,15 +41,14 @@ public class Controller
 	}
 	private MovingViolationsManagerView view;
 	
-	private ArregloDinamico<VOMovingViolations> datos;
+	private RedBlackTree<Integer,VOMovingViolations> arbol;
 	
 	VOMovingViolations [] muestra;
-	
 	
 	public Controller() 
 	{
 		view = new MovingViolationsManagerView();
-		datos=new ArregloDinamico<VOMovingViolations>(300000);
+		arbol=new RedBlackTree<Integer,VOMovingViolations>();
 	}
 
 	public void run() 
@@ -67,37 +66,18 @@ public class Controller
 			case 0:
 				this.loadMovingViolations();
 				break;
-			case 1:
-
-				view.printMessage("Ingrese el addressID del cual desea obtener las infracciones con accidente");
-
-				int address_id=sc.nextInt();
-
-				ArregloDinamico<VOMovingViolations> z= this.infraccionesConAccidente().get(address_id);
-				System.out.println("Se encontraron "+z.darTamanio()+" infracciones que terminaron en accidente con el AddressID indicado:");
-				if(z!=null)
-				{
-					VOMovingViolations[] violaciones=new VOMovingViolations[z.darTamanio()];
-					for(int i=0;i<z.darTamanio();i++)
-					{
-						violaciones[i]=z.darElemento(i);
-					}
-					Sort.sort(violaciones, new VOMovingViolations.comparatorDate());
-					for(int i=0;i<violaciones.length;i++)
-					{
-						if(violaciones[i]!=null)
-							view.printMessage(violaciones[i].toString());
-						else break;
-					}
-				}
-				else 
-					view.printMessage("El codigo no es válido o no existen infracciones asociadas a la dirección ingresada");
+			case 1:		
+				view.printMessage("Ingrese el ObjectID a consultar");
+				int seleccion=sc.nextInt();
+				this.buscarInformacion(seleccion);
 				break;
 
 			case 2: 
-
-			
-
+				view.printMessage("Ingrese un valor inferior al rango");
+				int rango1=sc.nextInt();
+				view.printMessage("Ingrese un valor superior al rango:");
+				int rango2=sc.nextInt();
+				this.buscarInformacionEnRango(rango1,rango2);
 				break;
 			case 3:
 				sc.close();
@@ -110,58 +90,44 @@ public class Controller
 	{
 		try
 		{
-			for(Meses meses : Meses.values())
+			for(Meses mes: Meses.values())
 			{ 
 				Gson gson=new Gson();
-				BufferedReader br = new BufferedReader(new FileReader("./data/Moving_Violations_Issued_in_"+meses+"_2018.json"));
+				
+				BufferedReader br = new BufferedReader(new FileReader("./data/Moving_Violations_Issued_in_"+mes+"_2018.json"));
 				VOMovingViolations[] actual =  gson.fromJson(br, VOMovingViolations[].class);
+				
 				for (int i = 0; i < actual.length; i++) 
 				{
-					datos.agregar(actual[i]);
-					meses.contar();	
+					arbol.put(actual[i].getObjectId(), actual[i]);
+					mes.contar();	
 				}
-				view.printMessage("Numero de infracciones en el mes de " + (meses.name()) + ": " + meses.darInfracciones());
-			}	
+				
+				view.printMessage("Numero de infracciones en el mes de " + (mes.name()) + ": " + mes.darInfracciones());
+				
+			}
+			
+			view.printMessage("El total de infracciones fue de: " + arbol.size());
 		}
+
 		catch(Exception e)
 		{ 
 			e.printStackTrace(); 
 		}
-
-		muestra=new VOMovingViolations[datos.darTamanio()];
-		for(int i  = 0; i < datos.darTamanio(); i++)
-		{
-			muestra[i] = datos.darElemento(i);
-		}
-		Sort.sort(muestra, new VOMovingViolations.comparadorAddressID());
-		view.printMessage("Se encontraron "+datos.darTamanio()+" MovingViolations");
 	}
 
-	public LinearHash<Integer,ArregloDinamico <VOMovingViolations>> infraccionesConAccidente()
+	public void buscarInformacion(int objectID)
 	{
-		LinearHash <Integer,ArregloDinamico<VOMovingViolations>> retorno= new LinearHash<Integer,ArregloDinamico<VOMovingViolations>>(20000);
-		ArregloDinamico <VOMovingViolations> aux=new ArregloDinamico<VOMovingViolations>(200);
-		int address_id=muestra[0].getAddressID();
-
-		for(int i=0;i<muestra.length;i++)
-		{
-			if(muestra[i].getAddressID()==address_id && muestra[i].accident())
-			{
-				aux.agregar(muestra[i]);
-			}
-			else if(muestra[i].getAddressID()!=address_id)
-			{
-				retorno.put(address_id,aux);
-				address_id=muestra[i].getAddressID();
-				aux=new ArregloDinamico<VOMovingViolations>(200);
-				if(muestra[i].accident())
-					aux.agregar(muestra[i]);
-			}
-		}
-		retorno.put(address_id,aux);
-
-		return retorno;
+		view.printMessage(arbol.get(objectID).toString());
 	}
 
-	
+	public void buscarInformacionEnRango(int inferior,int superior)
+	{
+		Iterator<VOMovingViolations> it = arbol.valuesInRange(inferior, superior); 
+		
+		while( it.hasNext())
+		{
+			view.printMessage(it.next().toString());
+		}
+	}
 }

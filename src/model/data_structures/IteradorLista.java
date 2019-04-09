@@ -14,8 +14,7 @@ public class IteradorLista<T> implements Iterator<T>
 		proximo = primero; 
 	}
 
-	public boolean hasNext() 
-	{
+	public boolean hasNext() {
 		// TODO Auto-generated method stub
 		return proximo != null; 
 	}
@@ -24,11 +23,8 @@ public class IteradorLista<T> implements Iterator<T>
 	{
 		// TODO Auto-generated method stub
 		T retornar = proximo.darElemento();
-		
 		ant_prox = proximo;
-		
 		proximo = proximo.darSiguiente(); 
-		
 		return retornar; 
 	}
 	
